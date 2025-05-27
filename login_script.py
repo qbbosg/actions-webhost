@@ -14,13 +14,13 @@ def send_telegram_message(message):
     response = requests.post(url, json=payload)
     return response.json()
 
-def login_koyeb(email, password):
+def login_website(email, password, url):
     with sync_playwright() as p:
         browser = p.firefox.launch(headless=True)
         page = browser.new_page()
 
         # 访问登录页面
-        page.goto("https://client.webhostmost.com/login")
+        page.goto(url)
 
         # 输入邮箱和密码
         page.get_by_placeholder("Enter email").click()
@@ -54,15 +54,15 @@ if __name__ == "__main__":
 
     for account in accounts:
         email, password = account.split(':')
-        status = login_koyeb(email, password)
+        status = login_website(email, password, "https://client.webhostmost.com/login")
         login_statuses.append(status)
         print(status)
 
     if login_statuses:
         message = "WEBHOST登录状态:\n\n" + "\n".join(login_statuses)
-        result = send_telegram_message(message)
-        print("消息已发送到Telegram:", result)
+#        result = send_telegram_message(message)
+        print("WEBHOST登录状态:", message)
     else:
         error_message = "没有配置任何账号"
-        send_telegram_message(error_message)
+#        send_telegram_message(error_message)
         print(error_message)
